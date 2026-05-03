@@ -23,6 +23,7 @@ from pytoyoda.models.electric_status import ElectricStatus
 from pytoyoda.models.endpoints.command import CommandType
 from pytoyoda.models.endpoints.common import StatusModel
 from pytoyoda.models.endpoints.electric import (
+    ChargingSchedule,
     ElectricCommandResponseModel,
     NextChargeSettings,
 )
@@ -745,6 +746,53 @@ class Vehicle(CustomAPIBaseModel[type[T]]):
     #
     # More get functionality depending on what we find
     #
+    # async def delete_charging_schedule(self, vin: str, schedule_id: str) -> StatusModel:
+    async def delete_charging_schedule(
+        self, vin: str, schedule_id: str
+    ) -> StatusModel:
+        """Delete the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            schedule_id: ID of the charging schedule to delete
+
+        Returns:
+            Model containing status of the delete request
+
+        """
+        return await self._api.delete_charging_schedule(self.vin, schedule_id)
+    async def update_charging_schedule(
+        self, vin: str, charging_schedule: ChargingSchedule
+    ) -> StatusModel:
+        """Update the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            charging_schedule: ChargingSchedule to update
+
+        Returns:
+            Model containing status of the update request
+
+        """
+        return await self._api.update_charging_schedule(vin, charging_schedule)
+    
+    async def create_charging_schedule(
+        self, vin: str, charging_schedule: ChargingSchedule
+    ) -> StatusModel:
+        """Create the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            charging_schedule: ChargingSchedule to create
+
+        Returns:
+            Model containing status of the create request
+
+        """
+        return await self._api.create_charging_schedule(vin, charging_schedule)
+
+
+
 
     async def set_alias(
         self,

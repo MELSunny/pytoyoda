@@ -14,6 +14,7 @@ from pytoyoda.const import (
     VEHICLE_CLIMATE_STATUS_REFRESH_ENDPOINT,
     VEHICLE_COMMAND_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_CONTROL_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_ELECTRIC_CHARGING_SCHEDULE_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_REALTIME_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_REFRESH_STATUS_ENDPOINT,
@@ -36,6 +37,7 @@ from pytoyoda.models.endpoints.climate import (
 from pytoyoda.models.endpoints.command import CommandType, RemoteCommandModel
 from pytoyoda.models.endpoints.common import StatusModel
 from pytoyoda.models.endpoints.electric import (
+    ChargingSchedule,
     ElectricCommandResponseModel,
     ElectricResponseModel,
     NextChargeSettings,
@@ -514,4 +516,63 @@ class Api:
             VEHICLE_GLOBAL_REMOTE_ELECTRIC_CONTROL_ENDPOINT,
             vin=vin,
             body=command.model_dump(exclude_none=True, by_alias=True),
+        )
+    
+    async def delete_charging_schedule(self, vin: str, schedule_id: str) -> StatusModel:
+        """Delete the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            schedule_id: ID of the charging schedule to delete
+
+        Returns:
+            Model containing status of the delete request
+
+        """
+        return await self._request_and_parse(
+            StatusModel,
+            "DELETE",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_CHARGING_SCHEDULE_ENDPOINT + '/' + schedule_id,
+            vin=vin,
+        )
+    async def update_charging_schedule(
+        self, vin: str, charging_schedule: ChargingSchedule
+    ) -> StatusModel:
+        """Update the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            charging_schedule: ChargingSchedule to update
+
+        Returns:
+            Model containing status of the update request
+
+        """
+
+        return await self._request_and_parse(
+            StatusModel,
+            "PUT",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_CHARGING_SCHEDULE_ENDPOINT+ '/' + str(charging_schedule.id),
+            vin=vin,
+            body=charging_schedule.model_dump(exclude_none=True, by_alias=True),
+        )
+    async def create_charging_schedule(
+        self, vin: str, charging_schedule: ChargingSchedule
+    ) -> StatusModel:
+        """Create the charging schedule for a vehicle.
+
+        Args:
+            vin: Vehicle Identification Number
+            charging_schedule: ChargingSchedule to create
+
+        Returns:
+            Model containing status of the create request
+
+        """
+        return await self._request_and_parse(
+            StatusModel,
+            "POST",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_CHARGING_SCHEDULE_ENDPOINT,
+            vin=vin,
+            body=charging_schedule.model_dump(exclude_none=True, by_alias=True),
         )
